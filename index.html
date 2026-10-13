@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Metadata Installation</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:Consolas,monospace;color:#ddd}
+#stage{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;padding:24px;height:100vh;box-sizing:border-box}
+.col{white-space:pre-line;border-left:1px solid #333;padding-left:12px;font-size:17px;line-height:1.45;overflow:hidden;box-sizing:border-box}
+#enter{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;color:#ddd;font:17px/1.45 Consolas,monospace;cursor:pointer;user-select:none}
+#enter:focus{outline:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="col" id="c0"></div>
+  <div class="col" id="c1"></div>
+  <div class="col" id="c2"></div>
+  <div class="col" id="c3"></div>
+  <div class="col" id="c4"></div>
+</div>
+<div id="enter" tabindex="0" role="button" aria-label="Click to enter">CLICK TO ENTER / SOUND ON</div>
+
+<script>
+"use strict";
+
+/*
+  Source data:
+  Metadata list.txt is embedded verbatim for filename/Size/Created/Modified/Length.
+  Repetition counts are retained separately and expanded into deterministic sequences.
+  Folder 1 exists in the source but contains no entries; the five populated source
+  sections are Folder 2, Folder 3, Folder 4, Folder 5, and Other.
+*/
+const SOURCE_ENTRIES = [{"section":"Folder 2","filename":"2_5411186458226593560","text":"2_5411186458226593560\nSize: 23.7 MB (24,925,972 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:17:20 AM\nModified: ‎Monday, ‎April ‎13, ‎2026, ‏‎10:11:15 AM\nLength: 00:05:21","count":12},{"section":"Folder 2","filename":"4_5967702782566734677","text":"4_5967702782566734677\nSize: 123 MB (129,579,468 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:01 AM\nModified: ‎Sunday, ‎January ‎4, ‎2026, ‏‎9:06:31 PM\nLength: 00:08:33","count":62},{"section":"Folder 2","filename":"4_5980880691418634951","text":"4_5980880691418634951\nSize: 74.5 MB (78,153,817 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:35 AM\nModified: ‎Thursday, ‎January ‎8, ‎2026, ‏‎4:25:42 PM\nLength: 00:04:19","count":70},{"section":"Folder 2","filename":"4_5980880691418634952","text":"4_5980880691418634952\nSize: 147 MB (154,637,002 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:37 AM\nModified: ‎Thursday, ‎January ‎8, ‎2026, ‏‎4:54:38 PM\nLength: 00:07:46","count":36},{"section":"Folder 2","filename":"4_5980880691418634954","text":"4_5980880691418634954\nSize: 76.4 MB (80,161,040 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:42 AM\nModified: ‎Thursday, ‎January ‎8, ‎2026, ‏‎4:57:26 PM\nLength: 00:04:43","count":40},{"section":"Folder 2","filename":"4_5980880691418634955","text":"4_5980880691418634955\nSize: 71.6 MB (75,169,265 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:45 AM\nModified: ‎Thursday, ‎January ‎8, ‎2026, ‏‎4:30:59 PM\nLength: 00:03:27","count":60},{"section":"Folder 2","filename":"4_5980880691418634956","text":"4_5980880691418634956\nSize: 52.6 MB (55,181,567 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:47 AM\nModified: ‎Thursday, ‎January ‎8, ‎2026, ‏‎4:44:35 PM\nLength: 00:03:20","count":80},{"section":"Folder 2","filename":"4_6021838126618516721","text":"4_6021838126618516721\nSize: 67.5 MB (70,823,895 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:24:10 AM\nModified: ‎Thursday, ‎January ‎22, ‎2026, ‏‎9:05:26 PM\nLength: 00:04:17","count":20},{"section":"Folder 2","filename":"4_6025943552712777517","text":"4_6025943552712777517\nSize: 58.9 MB (61,820,572 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:24:16 AM\nModified: ‎Saturday, ‎May ‎2, ‎2026, ‏‎4:34:13 PM\nLength: 00:03:45","count":8},{"section":"Folder 2","filename":"4_6025943552712777522","text":"4_6025943552712777522\nSize: 58.4 MB (61,269,202 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:24:18 AM\nModified: ‎Saturday, ‎May ‎2, ‎2026, ‏‎2:10:14 PM\nLength: 00:03:41","count":15},{"section":"Folder 2","filename":"12946635285b872531eeb8f298cb69af-720p","text":"12946635285b872531eeb8f298cb69af-720p\nSize: 50.8 MB (53,327,008 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎9:49:25 AM\nModified: ‎Sunday, ‎July ‎3, ‎2022, ‏‎9:22:47 AM\nLength: 00:03:29","count":5},{"section":"Folder 2","filename":"919d95bebd8b846a8a0a1c4ab494c133-1080p","text":"919d95bebd8b846a8a0a1c4ab494c133-1080p\nSize: 141 MB (148,133,148 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎9:49:25 AM\nModified: ‎Saturday, ‎June ‎18, ‎2022, ‏‎11:55:07 AM\nLength: 00:05:26","count":3},{"section":"Folder 2","filename":"262e93e660f59b41cf65db1ff88be68b-1080p","text":"262e93e660f59b41cf65db1ff88be68b-1080p\nSize: 128 MB (135,085,485 bytes\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎9:49:26 AM\nModified: ‎Thursday, ‎June ‎16, ‎2022, ‏‎8:49:49 AM\nLength: 00:05:22","count":5},{"section":"Folder 2","filename":"a681383a8070a5c7a04ba8f71c9a0e14-1080p","text":"a681383a8070a5c7a04ba8f71c9a0e14-1080p\nSize: 134 MB (140,593,014 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎9:49:28 AM\nModified: ‎Thursday, ‎June ‎23, ‎2022, ‏‎11:20:13 AM\nLength: 00:04:46","count":30},{"section":"Folder 3","filename":"2_5467903322436441401","text":"2_5467903322436441401\nSize: 44.3 MB (46,464,630 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:31:31 PM\nModified: ‎Thursday, ‎May ‎7, ‎2026, ‏‎3:46:28 PM\nLength: 00:12:25","count":30},{"section":"Folder 3","filename":"4_5771635528344543908","text":"4_5771635528344543908\nSize: 555 MB (582,419,519 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:31:32 PM\nModified: ‎Wednesday, ‎May ‎13, ‎2026, ‏‎7:42:16 AM\nLength: 02:56:51","count":3},{"section":"Folder 3","filename":"4_5796208805771485581","text":"4_5796208805771485581\nSize: 1.01 GB (1,090,439,496 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:18:30 AM\nModified: ‎Thursday, ‎February ‎12, ‎2026, ‏‎2:31:44 PM\nLength: 06:43:59","count":10},{"section":"Folder 3","filename":"4_5875436048846167447","text":"4_5875436048846167447\nSize: 824 MB (865,042,470 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:19:11 AM\nModified: ‎Sunday, ‎April ‎5, ‎2026, ‏‎11:42:51 AM\nLength: 02:59:19","count":2},{"section":"Folder 3","filename":"4_5875436048846167540","text":"4_5875436048846167540\nSize: 266 MB (279,870,601 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:19:36 AM\nModified: ‎Monday, ‎April ‎13, ‎2026, ‏‎3:39:00 PM\nLength: 02:42:52","count":1},{"section":"Folder 3","filename":"4_5877687848659852891","text":"4_5877687848659852891\nSize: 855 MB (896,709,857 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:19:45 AM\nModified: ‎Wednesday, ‎April ‎8, ‎2026, ‏‎11:24:06 PM\nLength: 04:41:44","count":9},{"section":"Folder 3","filename":"4_5972106489844735720","text":"4_5972106489844735720\nSize: 534 MB (560,705,783 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:33:48 PM\nModified: ‎Thursday, ‎April ‎16, ‎2026, ‏‎10:15:20 PM\nLength: 03:19:00","count":6},{"section":"Folder 3","filename":"4_5985698755666517343","text":"4_5985698755666517343\nSize: 782 MB (820,826,100 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:58 AM\nModified: ‎Friday, ‎April ‎17, ‎2026, ‏‎10:50:17 PM\nLength: 02:13:35","count":5},{"section":"Folder 3","filename":"4_5985698755666517408","text":"4_5985698755666517408\nSize: 570 MB (598,132,256 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:22:21 AM\nModified: ‎Saturday, ‎April ‎18, ‎2026, ‏‎1:21:47 AM\nLength: 02:57:21","count":5},{"section":"Folder 3","filename":"4_6028583724944203336","text":"4_6028583724944203336\nSize: 80.7 MB (84,707,194 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:24:39 AM\nModified: ‎Saturday, ‎May ‎2, ‎2026, ‏‎2:46:28 PM\nLength: 00:10:33","count":50},{"section":"Folder 3","filename":"4_6037358935835418623","text":"4_6037358935835418623\nSize: 77.0 MB (80,781,729 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:25:42 AM\nModified: ‎Monday, ‎May ‎4, ‎2026, ‏‎10:59:45 PM\nLength: 00:14:15","count":50},{"section":"Folder 3","filename":"4_6037358935835418642","text":"4_6037358935835418642\nSize: 29.2 MB (30,641,371 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:25:45 AM\nModified: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎12:17:29 AM\nLength: 00:19:20","count":40},{"section":"Folder 3","filename":"4_6042040046461131697","text":"4_6042040046461131697\nSize: 25.0 MB (26,263,858 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:28:48 PM\nModified: ‎Wednesday, ‎May ‎6, ‎2026, ‏‎5:51:22 PM\nLength: 00:12:43","count":20},{"section":"Folder 3","filename":"4_6046543646088509860","text":"4_6046543646088509860\nSize: 37.9 MB (39,746,312 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:44:50 PM\nModified: ‎Thursday, ‎May ‎7, ‎2026, ‏‎5:05:21 PM\nLength: 00:12:05","count":50},{"section":"Folder 3","filename":"4_6057543646088507581","text":"4_6057543646088507581\nSize: 1.46 GB (1,570,569,938 bytes)\nCreated: ‎Wednesday, ‎July ‎16, ‎2025, ‏‎4:25:21 PM\nModified: ‎Wednesday, ‎July ‎16, ‎2025, ‏‎5:21:36 PM\nLength: 03:59:34","count":10},{"section":"Folder 4","filename":"4_5868506179243615606","text":"4_5868506179243615606\nSize: 53.9 MB (56,518,662 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:44:07 PM\nModified: ‎Monday, ‎March ‎9, ‎2026, ‏‎3:47:13 PM\nLength: 00:13:49","count":40},{"section":"Folder 4","filename":"4_5868506179243615664","text":"4_5868506179243615664\nSize: 31.2 MB (32,795,565 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:44:09 PM\nModified: ‎Monday, ‎March ‎9, ‎2026, ‏‎5:14:17 PM\nLength: 00:09:32","count":40},{"section":"Folder 4","filename":"4_5875436048846167453","text":"4_5875436048846167453\nSize: 11.9 MB (12,520,213 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:19:35 AM\nModified: ‎Wednesday, ‎March ‎11, ‎2026, ‏‎3:58:18 PM\nLength: 00:00:30","count":50},{"section":"Folder 4","filename":"4_5983446955852831620","text":"4_5983446955852831620\nSize: 280 MB (294,047,681 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:49 AM\nModified: ‎Friday, ‎April ‎17, ‎2026, ‏‎1:59:18 PM\nLength: 00:26:58","count":10},{"section":"Folder 4","filename":"4_6021838126618516701","text":"4_6021838126618516701\nSize: 111 MB (117,196,146 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:23:51 AM\nModified: ‎Thursday, ‎January ‎22, ‎2026, ‏‎8:35:16 PM\nLength: 00:11:23","count":50},{"section":"Folder 4","filename":"4_6021838126618516703","text":"4_6021838126618516703\nSize: 400 MB (419,989,889 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:23:55 AM\nModified: ‎Thursday, ‎January ‎22, ‎2026, ‏‎9:13:00 PM\nLength: 00:16:58","count":40},{"section":"Folder 4","filename":"4_6024089926432203047","text":"4_6024089926432203047\nSize: 84.8 MB (88,939,199 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:24:13 AM\nModified: ‎Friday, ‎January ‎23, ‎2026, ‏‎7:40:29 AM\nLength: 00:10:08","count":40},{"section":"Folder 4","filename":"1080p60-c7fc948988506a00932854cf10319ad7-1080p60","text":"1080p60-c7fc948988506a00932854cf10319ad7-1080p60\nSize: 94.3 MB (98,970,156 bytes)\nCreated: ‎Wednesday, ‎October ‎5, ‎2022, ‏‎12:25:25 P\nModified: ‎Wednesday, ‎September ‎14, ‎2022, ‏‎5:52:25 AM\nLength: 00:11:02","count":50},{"section":"Folder 4","filename":"1080p-dca5722e4970e806a07622058ec3c05b-1080p","text":"1080p-dca5722e4970e806a07622058ec3c05b-1080p\nSize: 139 MB (146,130,627 bytes)\nCreated: ‎Wednesday, ‎October ‎5, ‎2022, ‏‎12:25:03 PM\nModified: ‎Monday, ‎September ‎12, ‎2022, ‏‎6:53:01 AM\nLength: 00:09:58","count":50},{"section":"Folder 4","filename":"1080p60-6288c04a879d9cbe781fa805bc16ebac-1080p60","text":"1080p60-6288c04a879d9cbe781fa805bc16ebac-1080p60\nSize: 145 MB (152,205,190 bytes)\nCreated: ‎Wednesday, ‎October ‎5, ‎2022, ‏‎12:25:08 PM\nModified: ‎Friday, ‎September ‎2, ‎2022, ‏‎4:04:40 AM\nLength: 00:13:51","count":60},{"section":"Folder 4","filename":"1080p60-84bf08a08567685e41fcf0abb4790635-1080p60","text":"1080p60-84bf08a08567685e41fcf0abb4790635-1080p60\nSize: 112 MB (117,517,603 bytes)\nCreated: ‎Wednesday, ‎October ‎5, ‎2022, ‏‎12:25:13 PM\nModified: ‎Sunday, ‎October ‎2, ‎2022, ‏‎9:33:20 AM\nLength: 00:12:29","count":60},{"section":"Folder 4","filename":"1080p60-73148e594b9924ecbea9c06b021d3557-1080p60 (1)","text":"1080p60-73148e594b9924ecbea9c06b021d3557-1080p60 (1)\nSize: 161 MB (168,901,415 bytes)\nCreated: ‎Wednesday, ‎October ‎5, ‎2022, ‏‎12:25:16 PM\nModified: ‎Friday, ‎September ‎9, ‎2022, ‏‎5:55:28 AM\nLength: 00:10:04","count":30},{"section":"Folder 4","filename":"1080p-ec21d917ec271c10815c17680eb7937c-1080p","text":"1080p-ec21d917ec271c10815c17680eb7937c-1080p\nSize: 120 MB (126,214,346 bytes)\nCreated: ‎Wednesday, ‎October ‎5, ‎2022, ‏‎12:25:22 PM\nModified: ‎Saturday, ‎September ‎17, ‎2022, ‏‎3:34:56 AM\nLength: 00:05:37","count":10},{"section":"Folder 5","filename":"4_5766971352774876432","text":"4_5766971352774876432\nSize: 2.62 MB (2,756,359 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:18:30 AM\nModified: ‎Monday, ‎February ‎2, ‎2026, ‏‎10:31:39 PM\nLength: 00:00:33","count":40},{"section":"Folder 5","filename":"4_5848058776250227755","text":"4_5848058776250227755\nSize: 261 MB (274,022,144 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:19:00 AM\nModified: ‎Thursday, ‎January ‎29, ‎2026, ‏‎7:59:40 PM\nLength: 00:32:36","count":4},{"section":"Folder 5","filename":"4_5958436837302214185","text":"4_5958436837302214185\nSize: 109 MB (114,868,858 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:20:48 AM\nModified: ‎Thursday, ‎January ‎1, ‎2026, ‏‎9:36:13 PM\nLength: 00:27:55","count":20},{"section":"Folder 5","filename":"4_5960799052135145375","text":"4_5960799052135145375\nSize: 184 MB (193,965,664 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:20:52 AM\nModified: ‎Saturday, ‎February ‎7, ‎2026, ‏‎9:19:16 PM\nLength: 00:36:23","count":30},{"section":"Folder 5","filename":"4_5960898630951901232","text":"4_5960898630951901232\nSize: 68.3 MB (71,693,572 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:20:58 AM\nModified: ‎Thursday, ‎January ‎1, ‎2026, ‏‎9:41:36 PM\nLength: 00:22:10","count":40},{"section":"Folder 5","filename":"4_5963221529654204803","text":"4_5963221529654204803\nSize: 28.9 MB (30,329,829 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:00 AM\nModified: ‎Friday, ‎January ‎2, ‎2026, ‏‎8:38:53 PM\nLength: 00:15:46","count":20},{"section":"Folder 5","filename":"4_5967702782566734704","text":"4_5967702782566734704\nSize: 26.7 MB (28,043,543 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:06 AM\nModified: ‎Sunday, ‎January ‎4, ‎2026, ‏‎9:30:02 PM\nLength: 00:15:00","count":60},{"section":"Folder 5","filename":"4_5999036007805099852","text":"4_5999036007805099852\nSize: 49.7 MB (52,158,358 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:22:53 AM\nModified: ‎Tuesday, ‎April ‎21, ‎2026, ‏‎7:39:53 PM\nLength: 00:34:27","count":20},{"section":"Other","filename":"4_5974051933936164563","text":"4_5974051933936164563\nSize: 31.8 MB (33,404,448 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:21:33 AM\nModified: ‎Monday, ‎April ‎13, ‎2026, ‏‎9:25:19 PM\nLength: 00:04:46","count":5},{"section":"Other","filename":"4_5974185451584494094","text":"4_5974185451584494094\nSize: 8.04 MB (8,434,588 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:44:10 PM\nModified: ‎Sunday, ‎May ‎24, ‎2026, ‏‎7:25:39 PM\nLength: 00:03:36","count":10},{"section":"Other","filename":"4_5985698755666517411","text":"4_5985698755666517411\nSize: 64.3 MB (67,525,604 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:22:38 AM\nModified: ‎Friday, ‎April ‎17, ‎2026, ‏‎8:23:53 PM\nLength: 00:03:24","count":40},{"section":"Other","filename":"4_5985698755666517447","text":"4_5985698755666517447\nSize: 78.8 MB (82,699,798 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:22:49 AM\nModified: ‎Saturday, ‎April ‎18, ‎2026, ‏‎12:32:59 AM\nLength: 00:03:58","count":30},{"section":"Other","filename":"4_6021838126618516743","text":"4_6021838126618516743\nSize: 24.4 MB (25,624,104 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:24:12 AM\nModified: ‎Thursday, ‎January ‎22, ‎2026, ‏‎10:02:03 PM\nLength: 00:01:36","count":6},{"section":"Other","filename":"4_6028583724944203308","text":"4_6028583724944203308\nSize: 13.7 MB (14,418,167 bytes)\nCreated: ‎Tuesday, ‎May ‎5, ‎2026, ‏‎10:24:38 AM\nModified: ‎Saturday, ‎May ‎2, ‎2026, ‏‎9:26:20 AM\nLength: 00:04:37","count":3},{"section":"Other","filename":"4_6032951607899986691","text":"4_6032951607899986691\nSize: 88.6 MB (92,931,676 bytes)\nCreated: ‎Wednesday, ‎June ‎10, ‎2026, ‏‎5:44:29 PM\nModified: ‎Tuesday, ‎May ‎12, ‎2026, ‏‎10:38:34 PM\nLength: 00:27:58","count":2}];
+
+const SECTION_ORDER = ["Folder 2","Folder 3","Folder 4","Folder 5","Other"];
+const COLUMNS = SECTION_ORDER.map(section =>
+  SOURCE_ENTRIES.filter(entry => entry.section === section)
+);
+
+/*
+  The reference uses a sparse, fixed black/monospace treatment.
+  Timing follows the supplied prototype cadence: 1200–5000 ms changes with
+  500 ms initial column staggering, driven by one master performance.now() clock.
+*/
+const MIN_CHANGE_MS = 1200;
+const MAX_CHANGE_MS = 5000;
+const INITIAL_STAGGER_MS = 500;
+const COLORS = ["#d8d8d8","#7fd8ff","#b7ffbf","#ffd27f"];
+
+const cols = [...document.querySelectorAll(".col")];
+const enter = document.getElementById("enter");
+
+let masterPerfStart = 0;
+let running = false;
+let rafId = 0;
+let nextVisualTimes = new Array(COLUMNS.length);
+let visualIndex = new Array(COLUMNS.length).fill(0);
+const paceRng = COLUMNS.map((_, i) => mulberry32(hashString("column-" + i)));
+
+function hashString(str) {
+  // Deterministic 32-bit hash of the exact filename string.
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(seed) {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function colorFor(filename) {
+  return COLORS[hashString(filename) % COLORS.length];
+}
+
+function showEntry(column, index) {
+  const entry = COLUMNS[column][index];
+  cols[column].textContent = entry.text.replace(/\n/g, "\n\n");
+  cols[column].style.color = colorFor(entry.filename);
+}
+
+function nextIndex(column, index) {
+  return (index + 1) % COLUMNS[column].length;
+}
+
+function expandedIndexAt(column, beat) {
+  // Every source entry is repeated exactly its source count times.
+  const entries = COLUMNS[column];
+  let n = beat;
+  for (let i = 0; i < entries.length; i++) {
+    if (n < entries[i].count) return i;
+    n -= entries[i].count;
+  }
+  return 0;
+}
+
+function renderAt(perfNow) {
+  if (!running) return;
+
+  // Same cadence as the supplied prototype: each column changes after
+  // 1200–5000 ms, with columns initially staggered by 500 ms.
+  // All timestamps are still derived from one master performance.now() clock.
+  for (let column = 0; column < COLUMNS.length; column++) {
+    while (perfNow >= nextVisualTimes[column]) {
+      const index = nextIndex(column, visualIndex[column]);
+      visualIndex[column] = index;
+
+      const eventTime = nextVisualTimes[column];
+      showEntry(column, index);
+
+      const r = paceRng[column]();
+      nextVisualTimes[column] +=
+        MIN_CHANGE_MS + r * (MAX_CHANGE_MS - MIN_CHANGE_MS);
+    }
+  }
+
+  rafId = requestAnimationFrame(renderAt);
+}
+
+function startInstallation() {
+  if (running) return;
+
+  masterPerfStart = performance.now();
+  running = true;
+  visualIndex.fill(0);
+
+  for (let column = 0; column < COLUMNS.length; column++) {
+    showEntry(column, 0);
+
+    const initialTime = masterPerfStart + column * INITIAL_STAGGER_MS;
+    const r = paceRng[column]();
+    nextVisualTimes[column] =
+      initialTime + MIN_CHANGE_MS + r * (MAX_CHANGE_MS - MIN_CHANGE_MS);
+  }
+
+  requestAnimationFrame(renderAt);
+}
+
+function enterInstallation() {
+  if (running) return;
+  enter.style.display = "none";
+  startInstallation();
+}
+
+enter.addEventListener("click", enterInstallation);
+enter.addEventListener("keydown", event => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    enterInstallation();
+  }
+});
+
+</script>
+</body>
+</html>
